@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import UserForm from "./form/UserForm";
 import IconButton from "./userTable/components/IconButton";
 import UserTable from "./userTable/UserTable";
@@ -7,26 +8,49 @@ function App() {
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(null);
-  const data = {
+  const [data, setData] = useState({
     headerItems: [
       { name: "Id", width: "7%" },
       { name: "Nombre", width: "30%" },
       { name: "email", width: "40%" },
       { name: "Opciones", width: "20%" },
     ],
-    rows: [
-      { id: 1, name: "Ian Rosas", email: "ian@gmail.com" },
-      { id: 2, name: "Adriel Rosas", email: "ian@gmail.com" },
-      { id: 3, name: "Aziel Eduardo", email: "ian@gmail.com" },
-    ],
-  };
+    rows: [],
+  });
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/v1/users").then((response) => {
+      console.log(response);
+      setData({ headerItems: [...data.headerItems], rows: [...response.data] });
+    });
+  }, []);
+
   const handleAdd = () => {
     setShowForm(true);
     setIsEditing(false);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = (obj) => {
+    console.log(obj);
+    axios.post("http://localhost:8000/api/v1/users", obj).then((res) => {
+      axios.get("http://localhost:8000/api/v1/users").then((response) => {
+        setData({
+          headerItems: [...data.headerItems],
+          rows: [...response.data],
+        });
+      });
+    });
+  };
+
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:8000/api/v1/users/${id}`).then((res) => {
+      axios.get("http://localhost:8000/api/v1/users").then((response) => {
+        setData({
+          headerItems: [...data.headerItems],
+          rows: [...response.data],
+        });
+      });
+    });
   };
 
   return (
@@ -47,6 +71,7 @@ function App() {
         setIsEditing={setIsEditing}
         showForm={setShowForm}
         setValue={setValue}
+        handleDelete={handleDelete}
       />
     </div>
   );

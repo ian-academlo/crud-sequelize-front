@@ -2,7 +2,13 @@ import { TableFrame } from "./components/components.styled";
 import TableHeader from "./components/TableHeader";
 import TableRow from "./components/TableRow";
 
-const UserTable = ({ data, setIsEditing, showForm, setValue }) => {
+const UserTable = ({
+  data,
+  setIsEditing,
+  showForm,
+  setValue,
+  handleDelete,
+}) => {
   return (
     <TableFrame>
       <TableHeader items={data.headerItems} />
@@ -15,6 +21,7 @@ const UserTable = ({ data, setIsEditing, showForm, setValue }) => {
             setIsEditing={setIsEditing}
             showForm={showForm}
             setValue={setValue}
+            handleDelete={handleDelete}
           />
         );
       })}
